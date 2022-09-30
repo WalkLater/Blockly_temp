@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google" value="notranslate">
+  <title>Blockly Demo:</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="js/blockly_compressed.js"></script>
+  <script src="js/blocks_compressed.js"></script>
+  <script src="js/javascript_compressed.js"></script>
+  <script src="js/python_compressed.js"></script>
+  <script src="js/php_compressed.js"></script>
+  <script src="js/lua_compressed.js"></script>
+  <script src="js/dart_compressed.js"></script>
+  <script src="js/raw_jen.js"></script>
+  <script src="js/raw_block.js."></script>
+  <script src="js/code.js"></script>
+</head>
+
+<style class="text/css">
+  .mytab1{
+    background: url("pitch.png");
+    background_size:cover;
+  }
+</style>
+
+<body>
+  <audio id="pianoA3" src="source\\piano\\A3.mp3"></audio>
+  <audio id="pianoD3" src="source\\piano\\D3.mp3"></audio>
+  <audio id="player" src="#" autoplay></audio>
+  <table width="100%" height="100%">
+    <tr class="mytab1">
+      <td>
+        <h1>
+          <span id="title">Blockly Demos MUSIC</span>
+        </h1>
+      </td>
+      <td class="farSide">
+        <select id="languageMenu"></select>
+        <a class="privacyLink" href="https://policies.google.com/privacy">Privacy</a>
+      </td>
+    </tr>
+    <tr>
+      <td colspan=2>
+        <table width="100%">
+          <tr id="tabRow" height="1em">
+            <td id="tab_blocks" class="tabon">Blocks</td>
+            <td class="tabmin tab_collapse">&nbsp;</td>
+            <td id="tab_javascript" class="taboff tab_collapse">JavaScript</td>
+            <td class="tabmin tab_collapse">&nbsp;</td>
+            <td id="tab_python" class="taboff tab_collapse">Python</td>
+            <td class="tabmin tab_collapse">&nbsp;</td>
+            <td id="tab_php" class="taboff tab_collapse">PHP</td>
+            <td class="tabmin tab_collapse">&nbsp;</td>
+            <td id="tab_lua" class="taboff tab_collapse">Lua</td>
+            <td class="tabmin tab_collapse">&nbsp;</td>
+            <td id="tab_dart" class="taboff tab_collapse">Dart</td>
+            <td class="tabmin tab_collapse">&nbsp;</td>
+            <td id="tab_xml" class="taboff tab_collapse">XML</td>
+            <td class="tabmin">&nbsp;</td>
+            <td id="tab_code" class="taboff">
+              <select id="code_menu"></select>
+            </td>
+            <td class="tabmax">
+              <button id="trashButton" class="notext" title="...">
+                <img src='media/1x1.gif' class="trash icon21">
+              </button>
+              <button id="linkButton" class="notext" title="...">
+                <img src='media/1x1.gif' class="link icon21">
+              </button>
+              <button id="runButton" class="notext primary" title="...">
+                <img src='media/1x1.gif' class="run icon21">
+              </button>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td height="99%" colspan=2 id="content_area">
+      </td>
+    </tr>
+  </table>
+  <div id="content_blocks" class="content"></div>
+  <pre id="content_javascript" class="content prettyprint lang-js"></pre>
+  <pre id="content_python" class="content prettyprint lang-py"></pre>
+  <pre id="content_php" class="content prettyprint lang-php"></pre>
+  <pre id="content_lua" class="content prettyprint lang-lua"></pre>
+  <pre id="content_dart" class="content prettyprint lang-dart"></pre>
+  <textarea id="content_xml" class="content" wrap="off"></textarea>
+
+  <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+    <category name="选择模式" colour="330">
+      <block type="music"></block>
+    </category>
+    <category name="选择乐器" colour="250">
+      <block type="instrument"></block>
+      <block type="tune"></block>
+      <block type="repeat"></block>
+    </category>
+    <category name="优化" colour="100">
+      <block type="silence"></block>
+      <block type="musicstar"></block>
+      <block type="musicsong"></block>
+    </category>
+  </xml>
+</body>
+  <script language="JavaScript" >
+    //音调数组
+    var pitch = 'C3 D3 E3 F3 G3 A3 B3 C4 D4 E4 F4 G4 A4 RE'.split(/ /);
+    var musicStar = "C3D3E3F3";
+    var musicSong = "A4G4F4D4";
+
+    //音调————数字
+    var pitch_num = function(value)
+    {
+        var normal = value.trim().toUpperCase();
+        var i = pitch.indexOf(normal);
+        return i > -1 ? i : undefined;
+    }
+
+    //数字————音调
+    var num_pitch = function(value)
+    {
+        return pitch[Number(value)];
+    }
+
+    //乐器数组
+    var modeList = ["piano","violin","guitar"];
+
+    //乐器————数字
+    var mode_code = function(value)
+    {
+       var normal = value.trim();
+       var i = modeList.indexOf(normal);
+       return i > -1 ? i : undefined;
+    }
+
+    //数字————乐器
+    var code_mode = function(value)
+    {
+       return modeList[Number(value)];
+    }
+
+    //设置MP3地址
+    var setFile = function(x,y)
+    {
+        y = num_pitch(y);
+        x = code_mode(x);
+        return "source\\" + x + "\\" + y + ".mp3";
+    }
+
+    //播放多个音频
+    var playAll = function(x,y,z)
+    {
+      let arr = [];
+      var len = y.length;
+      for (var i=0; i<len;i=i+2)
+      {
+        var slice = y.substring(i,i+2);
+        slice = pitch_num(slice);
+        var sliceFile = setFile(x,slice);
+        arr.push(sliceFile);
+      }
+
+      let MusicList = arr;
+      var player = document.getElementById('player');
+      let loop = 0;
+      player.src=MusicList[loop];
+      player.playbackRate=z;
+      player.play();
+
+      player.onended = function(){
+        ++loop;
+        if(loop == MusicList.length){
+          return ;
+        }
+        player.src = MusicList[loop];
+        player.playbackRate=z;
+      }
+    }
+
+    var check = function(music,y) {
+      switch(music) {
+      case "B":
+        ySlice = y.substring(15, 23);
+        if (musicStar == ySlice)
+          eval(y);
+        else
+        {
+          alert("Wrong pitch! Check again!");
+          alert("Correct Answer:C3D3E3F3");
+        }
+        break;
+      case "C":
+        ySlice = y.substring(15, 23);
+        if (musicSong == ySlice)
+          eval(y);
+        else
+        {
+          alert("Wrong pitch! Check again!");
+          alert("Correct Answer:A4G4F4E4");
+        }
+        break;
+      default:
+        throw "CHECK ERROR!";
+      }
+    }
+
+    var keepPlay = function(sentence)
+    {
+      while (1)
+        eval(sentence);
+    }
+
+   </script>
+</html>
